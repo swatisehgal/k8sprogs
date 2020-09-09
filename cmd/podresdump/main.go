@@ -20,10 +20,8 @@ import (
 	"context"
 	"fmt"
 	"log"
-	"net/url"
 	"os"
 	"os/signal"
-	"path/filepath"
 	"time"
 
 	"github.com/davecgh/go-spew/spew"
@@ -31,6 +29,7 @@ import (
 
 	podresources "k8s.io/kubernetes/pkg/kubelet/apis/podresources"
 	podresourcesapi "k8s.io/kubernetes/pkg/kubelet/apis/podresources/v1alpha1"
+	kubeletutil "k8s.io/kubernetes/pkg/kubelet/util"
 )
 
 const (
@@ -38,25 +37,13 @@ const (
 	defaultPodResourcesTimeout = 10 * time.Second
 	defaultPodResourcesMaxSize = 1024 * 1024 * 16 // 16 Mb
 	// obtained these values from node e2e tests : https://github.com/kubernetes/kubernetes/blob/82baa26905c94398a0d19e1b1ecf54eb8acb6029/test/e2e_node/util.go#L70
-
-	// unixProtocol is the network protocol of unix socket.
-	unixProtocol = "unix"
 )
-
-// borrowed from k8s.io/kubernetes/pkg/kubelet/util/util_unix.go
-func localEndpoint(path, file string) (string, error) {
-	u := url.URL{
-		Scheme: unixProtocol,
-		Path:   path,
-	}
-	return filepath.Join(u.String(), file+".sock"), nil
-}
 
 func main() {
 	podResourcesSocketPath := flag.StringP("socket", "S", defaultPodResourcesPath, "podresources socket path.")
 	flag.Parse()
 
-	sockPath, err := localEndpoint(*podResourcesSocketPath, podresources.Socket)
+	sockPath, err := kubeletutil.LocalEndpoint(*podResourcesSocketPath, podresources.Socket)
 	if err != nil {
 		log.Fatalf("%s", err)
 	}
