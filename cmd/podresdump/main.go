@@ -18,8 +18,11 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"net/url"
+	"os"
+	"os/signal"
 	"path/filepath"
 	"time"
 
@@ -69,14 +72,35 @@ func main() {
 		log.Fatalf("%s", err)
 	}
 
-	var messages uint64
-	for {
-		resp, err := watcher.Recv()
-		if err != nil {
-			log.Printf("%s", err)
-			break
+	resps := make(chan *podresourcesapi.WatchPodResourcesResponse)
+	sigs := make(chan os.Signal, 1)
+	signal.Notify(sigs, os.Interrupt)
+
+	started := time.Now()
+
+	go func() {
+		for {
+			resp, err := watcher.Recv()
+			if err != nil {
+				log.Printf("%s", err)
+				break
+			}
+			resps <- resp
 		}
-		log.Printf("%s", spew.Sdump(resp))
-		messages++
+	}()
+
+	var messages uint64
+
+	done := false
+	for !done {
+		select {
+		case <-sigs:
+			done = true
+		case resp := <-resps:
+			fmt.Printf("%s", spew.Sdump(resp))
+			messages++
+		}
 	}
+
+	log.Printf("%v messages in %v", messages, time.Now().Sub(started))
 }
