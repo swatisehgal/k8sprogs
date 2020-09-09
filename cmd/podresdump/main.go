@@ -85,9 +85,10 @@ func main() {
 
 	}
 
-	resps := make(chan *podresourcesapi.WatchPodResourcesResponse)
-	sigs := make(chan os.Signal, 1)
-	signal.Notify(sigs, os.Interrupt)
+	respsCh := make(chan *podresourcesapi.WatchPodResourcesResponse)
+	stopCh := make(chan bool, 1)
+	sigsCh := make(chan os.Signal, 1)
+	signal.Notify(sigsCh, os.Interrupt)
 
 	started := time.Now()
 
@@ -96,9 +97,10 @@ func main() {
 			resp, err := watcher.Recv()
 			if err != nil {
 				log.Printf("%s", err)
+				stopCh <- true
 				break
 			}
-			resps <- resp
+			respsCh <- resp
 		}
 	}()
 
@@ -107,9 +109,11 @@ func main() {
 	done := false
 	for !done {
 		select {
-		case <-sigs:
+		case <-stopCh:
 			done = true
-		case resp := <-resps:
+		case <-sigsCh:
+			done = true
+		case resp := <-respsCh:
 			jsonBytes, err := json.Marshal(resp.PodResources)
 			if err != nil {
 				log.Printf("%v", err)
