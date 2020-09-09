@@ -40,6 +40,8 @@ const (
 )
 
 func main() {
+	var err error
+	autoReconnect := flag.BoolP("autoreconnect", "A", false, "don't give up if connection fails.")
 	podResourcesSocketPath := flag.StringP("socket", "S", defaultPodResourcesPath, "podresources socket path.")
 	flag.Parse()
 
@@ -50,13 +52,24 @@ func main() {
 
 	cli, conn, err := podresources.GetClient(sockPath, defaultPodResourcesTimeout, defaultPodResourcesMaxSize)
 	if err != nil {
-		log.Fatalf("%s", err)
+		log.Fatalf("failed to connect: %v", err)
 	}
 	defer conn.Close()
 
-	watcher, err := cli.Watch(context.TODO(), &podresourcesapi.WatchPodResourcesRequest{})
-	if err != nil {
-		log.Fatalf("%s", err)
+	var watcher podresourcesapi.PodResourcesLister_WatchClient
+	for {
+		watcher, err = cli.Watch(context.TODO(), &podresourcesapi.WatchPodResourcesRequest{})
+		if err == nil {
+			break
+		} else {
+			if !*autoReconnect {
+				log.Fatalf("failed to watch: %v", err)
+			} else {
+				log.Printf("error watching: %v", err)
+				time.Sleep(1 * time.Second)
+			}
+		}
+
 	}
 
 	resps := make(chan *podresourcesapi.WatchPodResourcesResponse)
