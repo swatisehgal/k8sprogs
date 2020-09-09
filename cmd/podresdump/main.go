@@ -18,13 +18,13 @@ package main
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"log"
 	"os"
 	"os/signal"
 	"time"
 
-	"github.com/davecgh/go-spew/spew"
 	flag "github.com/spf13/pflag"
 
 	podresources "k8s.io/kubernetes/pkg/kubelet/apis/podresources"
@@ -38,6 +38,19 @@ const (
 	defaultPodResourcesMaxSize = 1024 * 1024 * 16 // 16 Mb
 	// obtained these values from node e2e tests : https://github.com/kubernetes/kubernetes/blob/82baa26905c94398a0d19e1b1ecf54eb8acb6029/test/e2e_node/util.go#L70
 )
+
+func podActionToString(action podresourcesapi.WatchPodAction) string {
+	switch action {
+	case podresourcesapi.WatchPodAction_ADDED:
+		return "ADD"
+	case podresourcesapi.WatchPodAction_MODIFIED:
+		return "MOD"
+	case podresourcesapi.WatchPodAction_DELETED:
+		return "DEL"
+	default:
+		return "???"
+	}
+}
 
 func main() {
 	var err error
@@ -97,8 +110,13 @@ func main() {
 		case <-sigs:
 			done = true
 		case resp := <-resps:
-			fmt.Printf("%s", spew.Sdump(resp))
-			messages++
+			jsonBytes, err := json.Marshal(resp.PodResources)
+			if err != nil {
+				log.Printf("%v", err)
+			} else {
+				fmt.Printf("%s %s\n", podActionToString(resp.Action), string(jsonBytes))
+				messages++
+			}
 		}
 	}
 
