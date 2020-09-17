@@ -1,5 +1,5 @@
-RUNTIME ?= podman
-REPOOWNER ?= fromani
+RUNTIME ?= docker
+REPOOWNER ?= swsehgal
 IMAGENAME ?= k8sprogs
 IMAGETAG ?= latest
 

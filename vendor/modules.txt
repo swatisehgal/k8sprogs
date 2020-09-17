@@ -144,7 +144,7 @@ k8s.io/apimachinery/pkg/watch
 k8s.io/apimachinery/third_party/forked/golang/reflect
 # k8s.io/klog/v2 v2.2.0
 k8s.io/klog/v2
-# k8s.io/kubernetes v1.19.0 => k8s.io/kubernetes v1.19.0
+# k8s.io/kubernetes v1.19.0 => ../../../k8s.io/kubernetes
 ## explicit
 k8s.io/kubernetes/pkg/kubelet/apis/podresources
 k8s.io/kubernetes/pkg/kubelet/apis/podresources/v1alpha1
@@ -169,7 +169,7 @@ sigs.k8s.io/structured-merge-diff/v4/value
 # k8s.io/kube-scheduler => k8s.io/kube-scheduler v0.19.0
 # k8s.io/kubectl => k8s.io/kubectl v0.19.0
 # k8s.io/kubelet => k8s.io/kubelet v0.19.0
-# k8s.io/kubernetes => k8s.io/kubernetes v1.19.0
+# k8s.io/kubernetes => ../../../k8s.io/kubernetes
 # k8s.io/legacy-cloud-providers => k8s.io/legacy-cloud-providers v0.19.0
 # k8s.io/metrics => k8s.io/metrics v0.19.0
 # k8s.io/sample-apiserver => k8s.io/sample-apiserver v0.19.0
