@@ -45,35 +45,98 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
-type WatchPodAction int32
-
-const (
-	WatchPodAction_ADDED    WatchPodAction = 0
-	WatchPodAction_MODIFIED WatchPodAction = 1
-	WatchPodAction_DELETED  WatchPodAction = 2
-)
-
-var WatchPodAction_name = map[int32]string{
-	0: "ADDED",
-	1: "MODIFIED",
-	2: "DELETED",
+type AvailableResourcesRequest struct {
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
 }
 
-var WatchPodAction_value = map[string]int32{
-	"ADDED":    0,
-	"MODIFIED": 1,
-	"DELETED":  2,
-}
-
-func (x WatchPodAction) String() string {
-	return proto.EnumName(WatchPodAction_name, int32(x))
-}
-
-func (WatchPodAction) EnumDescriptor() ([]byte, []int) {
+func (m *AvailableResourcesRequest) Reset()      { *m = AvailableResourcesRequest{} }
+func (*AvailableResourcesRequest) ProtoMessage() {}
+func (*AvailableResourcesRequest) Descriptor() ([]byte, []int) {
 	return fileDescriptor_00212fb1f9d3bf1c, []int{0}
 }
+func (m *AvailableResourcesRequest) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *AvailableResourcesRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_AvailableResourcesRequest.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *AvailableResourcesRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_AvailableResourcesRequest.Merge(m, src)
+}
+func (m *AvailableResourcesRequest) XXX_Size() int {
+	return m.Size()
+}
+func (m *AvailableResourcesRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_AvailableResourcesRequest.DiscardUnknown(m)
+}
 
-// ListPodResourcesRequest is the request made to the PodResources service
+var xxx_messageInfo_AvailableResourcesRequest proto.InternalMessageInfo
+
+// AvailableResourcesResponses contains informations about all the devices known by the kubelet
+type AvailableResourcesResponse struct {
+	Devices              []*ContainerDevices `protobuf:"bytes,1,rep,name=devices,proto3" json:"devices,omitempty"`
+	CpuIds               []int64             `protobuf:"varint,2,rep,packed,name=cpu_ids,json=cpuIds,proto3" json:"cpu_ids,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}            `json:"-"`
+	XXX_sizecache        int32               `json:"-"`
+}
+
+func (m *AvailableResourcesResponse) Reset()      { *m = AvailableResourcesResponse{} }
+func (*AvailableResourcesResponse) ProtoMessage() {}
+func (*AvailableResourcesResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_00212fb1f9d3bf1c, []int{1}
+}
+func (m *AvailableResourcesResponse) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *AvailableResourcesResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_AvailableResourcesResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *AvailableResourcesResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_AvailableResourcesResponse.Merge(m, src)
+}
+func (m *AvailableResourcesResponse) XXX_Size() int {
+	return m.Size()
+}
+func (m *AvailableResourcesResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_AvailableResourcesResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_AvailableResourcesResponse proto.InternalMessageInfo
+
+func (m *AvailableResourcesResponse) GetDevices() []*ContainerDevices {
+	if m != nil {
+		return m.Devices
+	}
+	return nil
+}
+
+func (m *AvailableResourcesResponse) GetCpuIds() []int64 {
+	if m != nil {
+		return m.CpuIds
+	}
+	return nil
+}
+
+// ListPodResourcesRequest is the request made to the PodResourcesLister service
 type ListPodResourcesRequest struct {
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -82,7 +145,7 @@ type ListPodResourcesRequest struct {
 func (m *ListPodResourcesRequest) Reset()      { *m = ListPodResourcesRequest{} }
 func (*ListPodResourcesRequest) ProtoMessage() {}
 func (*ListPodResourcesRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_00212fb1f9d3bf1c, []int{0}
+	return fileDescriptor_00212fb1f9d3bf1c, []int{2}
 }
 func (m *ListPodResourcesRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -121,7 +184,7 @@ type ListPodResourcesResponse struct {
 func (m *ListPodResourcesResponse) Reset()      { *m = ListPodResourcesResponse{} }
 func (*ListPodResourcesResponse) ProtoMessage() {}
 func (*ListPodResourcesResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_00212fb1f9d3bf1c, []int{1}
+	return fileDescriptor_00212fb1f9d3bf1c, []int{3}
 }
 func (m *ListPodResourcesResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -157,104 +220,11 @@ func (m *ListPodResourcesResponse) GetPodResources() []*PodResources {
 	return nil
 }
 
-// WatchPodResourcesRequest is the request made to the Watch PodResourcesLister service
-type WatchPodResourcesRequest struct {
-	XXX_NoUnkeyedLiteral struct{} `json:"-"`
-	XXX_sizecache        int32    `json:"-"`
-}
-
-func (m *WatchPodResourcesRequest) Reset()      { *m = WatchPodResourcesRequest{} }
-func (*WatchPodResourcesRequest) ProtoMessage() {}
-func (*WatchPodResourcesRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_00212fb1f9d3bf1c, []int{2}
-}
-func (m *WatchPodResourcesRequest) XXX_Unmarshal(b []byte) error {
-	return m.Unmarshal(b)
-}
-func (m *WatchPodResourcesRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	if deterministic {
-		return xxx_messageInfo_WatchPodResourcesRequest.Marshal(b, m, deterministic)
-	} else {
-		b = b[:cap(b)]
-		n, err := m.MarshalToSizedBuffer(b)
-		if err != nil {
-			return nil, err
-		}
-		return b[:n], nil
-	}
-}
-func (m *WatchPodResourcesRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_WatchPodResourcesRequest.Merge(m, src)
-}
-func (m *WatchPodResourcesRequest) XXX_Size() int {
-	return m.Size()
-}
-func (m *WatchPodResourcesRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_WatchPodResourcesRequest.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_WatchPodResourcesRequest proto.InternalMessageInfo
-
-// WatchPodResourcesResponse is the response returned by Watch function
-type WatchPodResourcesResponse struct {
-	Action               WatchPodAction  `protobuf:"varint,1,opt,name=action,proto3,enum=v1alpha1.WatchPodAction" json:"action,omitempty"`
-	PodResources         []*PodResources `protobuf:"bytes,2,rep,name=pod_resources,json=podResources,proto3" json:"pod_resources,omitempty"`
-	XXX_NoUnkeyedLiteral struct{}        `json:"-"`
-	XXX_sizecache        int32           `json:"-"`
-}
-
-func (m *WatchPodResourcesResponse) Reset()      { *m = WatchPodResourcesResponse{} }
-func (*WatchPodResourcesResponse) ProtoMessage() {}
-func (*WatchPodResourcesResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_00212fb1f9d3bf1c, []int{3}
-}
-func (m *WatchPodResourcesResponse) XXX_Unmarshal(b []byte) error {
-	return m.Unmarshal(b)
-}
-func (m *WatchPodResourcesResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	if deterministic {
-		return xxx_messageInfo_WatchPodResourcesResponse.Marshal(b, m, deterministic)
-	} else {
-		b = b[:cap(b)]
-		n, err := m.MarshalToSizedBuffer(b)
-		if err != nil {
-			return nil, err
-		}
-		return b[:n], nil
-	}
-}
-func (m *WatchPodResourcesResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_WatchPodResourcesResponse.Merge(m, src)
-}
-func (m *WatchPodResourcesResponse) XXX_Size() int {
-	return m.Size()
-}
-func (m *WatchPodResourcesResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_WatchPodResourcesResponse.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_WatchPodResourcesResponse proto.InternalMessageInfo
-
-func (m *WatchPodResourcesResponse) GetAction() WatchPodAction {
-	if m != nil {
-		return m.Action
-	}
-	return WatchPodAction_ADDED
-}
-
-func (m *WatchPodResourcesResponse) GetPodResources() []*PodResources {
-	if m != nil {
-		return m.PodResources
-	}
-	return nil
-}
-
 // PodResources contains information about the node resources assigned to a pod
 type PodResources struct {
 	Name                 string                `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	Namespace            string                `protobuf:"bytes,2,opt,name=namespace,proto3" json:"namespace,omitempty"`
 	Containers           []*ContainerResources `protobuf:"bytes,3,rep,name=containers,proto3" json:"containers,omitempty"`
-	ResourceVersion      int64                 `protobuf:"varint,4,opt,name=resource_version,json=resourceVersion,proto3" json:"resource_version,omitempty"`
 	XXX_NoUnkeyedLiteral struct{}              `json:"-"`
 	XXX_sizecache        int32                 `json:"-"`
 }
@@ -312,17 +282,11 @@ func (m *PodResources) GetContainers() []*ContainerResources {
 	return nil
 }
 
-func (m *PodResources) GetResourceVersion() int64 {
-	if m != nil {
-		return m.ResourceVersion
-	}
-	return 0
-}
-
 // ContainerResources contains information about the resources assigned to a container
 type ContainerResources struct {
 	Name                 string              `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	Devices              []*ContainerDevices `protobuf:"bytes,2,rep,name=devices,proto3" json:"devices,omitempty"`
+	CpuIds               []int64             `protobuf:"varint,3,rep,packed,name=cpu_ids,json=cpuIds,proto3" json:"cpu_ids,omitempty"`
 	XXX_NoUnkeyedLiteral struct{}            `json:"-"`
 	XXX_sizecache        int32               `json:"-"`
 }
@@ -373,12 +337,20 @@ func (m *ContainerResources) GetDevices() []*ContainerDevices {
 	return nil
 }
 
+func (m *ContainerResources) GetCpuIds() []int64 {
+	if m != nil {
+		return m.CpuIds
+	}
+	return nil
+}
+
 // ContainerDevices contains information about the devices assigned to a container
 type ContainerDevices struct {
-	ResourceName         string   `protobuf:"bytes,1,opt,name=resource_name,json=resourceName,proto3" json:"resource_name,omitempty"`
-	DeviceIds            []string `protobuf:"bytes,2,rep,name=device_ids,json=deviceIds,proto3" json:"device_ids,omitempty"`
-	XXX_NoUnkeyedLiteral struct{} `json:"-"`
-	XXX_sizecache        int32    `json:"-"`
+	ResourceName         string        `protobuf:"bytes,1,opt,name=resource_name,json=resourceName,proto3" json:"resource_name,omitempty"`
+	DeviceId             string        `protobuf:"bytes,2,opt,name=device_id,json=deviceId,proto3" json:"device_id,omitempty"`
+	Topology             *TopologyInfo `protobuf:"bytes,3,opt,name=topology,proto3" json:"topology,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}      `json:"-"`
+	XXX_sizecache        int32         `json:"-"`
 }
 
 func (m *ContainerDevices) Reset()      { *m = ContainerDevices{} }
@@ -420,58 +392,159 @@ func (m *ContainerDevices) GetResourceName() string {
 	return ""
 }
 
-func (m *ContainerDevices) GetDeviceIds() []string {
+func (m *ContainerDevices) GetDeviceId() string {
 	if m != nil {
-		return m.DeviceIds
+		return m.DeviceId
+	}
+	return ""
+}
+
+func (m *ContainerDevices) GetTopology() *TopologyInfo {
+	if m != nil {
+		return m.Topology
 	}
 	return nil
 }
 
+// Topology describes hardware topology of the resource
+type TopologyInfo struct {
+	Nodes                []*NUMANode `protobuf:"bytes,1,rep,name=nodes,proto3" json:"nodes,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}    `json:"-"`
+	XXX_sizecache        int32       `json:"-"`
+}
+
+func (m *TopologyInfo) Reset()      { *m = TopologyInfo{} }
+func (*TopologyInfo) ProtoMessage() {}
+func (*TopologyInfo) Descriptor() ([]byte, []int) {
+	return fileDescriptor_00212fb1f9d3bf1c, []int{7}
+}
+func (m *TopologyInfo) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *TopologyInfo) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_TopologyInfo.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *TopologyInfo) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_TopologyInfo.Merge(m, src)
+}
+func (m *TopologyInfo) XXX_Size() int {
+	return m.Size()
+}
+func (m *TopologyInfo) XXX_DiscardUnknown() {
+	xxx_messageInfo_TopologyInfo.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_TopologyInfo proto.InternalMessageInfo
+
+func (m *TopologyInfo) GetNodes() []*NUMANode {
+	if m != nil {
+		return m.Nodes
+	}
+	return nil
+}
+
+// NUMA representation of NUMA node
+type NUMANode struct {
+	ID                   int64    `protobuf:"varint,1,opt,name=ID,json=iD,proto3" json:"ID,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *NUMANode) Reset()      { *m = NUMANode{} }
+func (*NUMANode) ProtoMessage() {}
+func (*NUMANode) Descriptor() ([]byte, []int) {
+	return fileDescriptor_00212fb1f9d3bf1c, []int{8}
+}
+func (m *NUMANode) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *NUMANode) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_NUMANode.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *NUMANode) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_NUMANode.Merge(m, src)
+}
+func (m *NUMANode) XXX_Size() int {
+	return m.Size()
+}
+func (m *NUMANode) XXX_DiscardUnknown() {
+	xxx_messageInfo_NUMANode.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_NUMANode proto.InternalMessageInfo
+
+func (m *NUMANode) GetID() int64 {
+	if m != nil {
+		return m.ID
+	}
+	return 0
+}
+
 func init() {
-	proto.RegisterEnum("v1alpha1.WatchPodAction", WatchPodAction_name, WatchPodAction_value)
+	proto.RegisterType((*AvailableResourcesRequest)(nil), "v1alpha1.AvailableResourcesRequest")
+	proto.RegisterType((*AvailableResourcesResponse)(nil), "v1alpha1.AvailableResourcesResponse")
 	proto.RegisterType((*ListPodResourcesRequest)(nil), "v1alpha1.ListPodResourcesRequest")
 	proto.RegisterType((*ListPodResourcesResponse)(nil), "v1alpha1.ListPodResourcesResponse")
-	proto.RegisterType((*WatchPodResourcesRequest)(nil), "v1alpha1.WatchPodResourcesRequest")
-	proto.RegisterType((*WatchPodResourcesResponse)(nil), "v1alpha1.WatchPodResourcesResponse")
 	proto.RegisterType((*PodResources)(nil), "v1alpha1.PodResources")
 	proto.RegisterType((*ContainerResources)(nil), "v1alpha1.ContainerResources")
 	proto.RegisterType((*ContainerDevices)(nil), "v1alpha1.ContainerDevices")
+	proto.RegisterType((*TopologyInfo)(nil), "v1alpha1.TopologyInfo")
+	proto.RegisterType((*NUMANode)(nil), "v1alpha1.NUMANode")
 }
 
 func init() { proto.RegisterFile("api.proto", fileDescriptor_00212fb1f9d3bf1c) }
 
 var fileDescriptor_00212fb1f9d3bf1c = []byte{
-	// 475 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x94, 0x53, 0xcd, 0x6e, 0xd3, 0x40,
-	0x10, 0xce, 0x26, 0xe9, 0x8f, 0xa7, 0x69, 0xb1, 0xe6, 0x00, 0x6e, 0x14, 0xac, 0xe0, 0x5e, 0x02,
-	0x12, 0x69, 0x1b, 0x10, 0x17, 0xb8, 0x14, 0xd6, 0x48, 0x91, 0x0a, 0x45, 0x56, 0xd5, 0xde, 0x88,
-	0x36, 0xf6, 0x92, 0x58, 0xa2, 0x5e, 0xe3, 0x75, 0x72, 0xe6, 0xcc, 0x89, 0xd7, 0xe0, 0x19, 0x78,
-	0x81, 0x1e, 0x39, 0x72, 0xa4, 0xe1, 0x45, 0x90, 0xd7, 0x5d, 0xec, 0xe2, 0x10, 0xa9, 0x27, 0xcf,
-	0xcc, 0xf7, 0xcd, 0x7c, 0xdf, 0x7a, 0x67, 0xc1, 0x60, 0x71, 0xd8, 0x8f, 0x13, 0x91, 0x0a, 0xdc,
-	0x9c, 0x1f, 0xb2, 0x8f, 0xf1, 0x94, 0x1d, 0xb6, 0x1f, 0x4f, 0xc2, 0x74, 0x3a, 0x1b, 0xf7, 0x7d,
-	0x71, 0xb1, 0x3f, 0x11, 0x13, 0xb1, 0xaf, 0x08, 0xe3, 0xd9, 0x07, 0x95, 0xa9, 0x44, 0x45, 0x79,
-	0xa3, 0xb3, 0x0b, 0xf7, 0x8e, 0x43, 0x99, 0xbe, 0x13, 0x81, 0xc7, 0xa5, 0x98, 0x25, 0x3e, 0x97,
-	0x1e, 0xff, 0x34, 0xe3, 0x32, 0x75, 0xce, 0xc1, 0xaa, 0x42, 0x32, 0x16, 0x91, 0xe4, 0xf8, 0x1c,
-	0xb6, 0x63, 0x11, 0x8c, 0x12, 0x0d, 0x58, 0xa4, 0xdb, 0xe8, 0x6d, 0x0d, 0xee, 0xf6, 0xb5, 0x8f,
-	0xfe, 0x8d, 0xb6, 0x56, 0x5c, 0xca, 0x9c, 0x36, 0x58, 0xe7, 0x2c, 0xf5, 0xa7, 0xcb, 0x44, 0xbf,
-	0x10, 0xd8, 0x5d, 0x02, 0x5e, 0xcb, 0x1e, 0xc0, 0x3a, 0xf3, 0xd3, 0x50, 0x44, 0x16, 0xe9, 0x92,
-	0xde, 0xce, 0xc0, 0x2a, 0xf4, 0x74, 0xd3, 0x91, 0xc2, 0xbd, 0x6b, 0x5e, 0xd5, 0x68, 0xfd, 0x16,
-	0x46, 0xbf, 0x11, 0x68, 0x95, 0x61, 0x44, 0x68, 0x46, 0xec, 0x82, 0x2b, 0x75, 0xc3, 0x53, 0x31,
-	0x76, 0xc0, 0xc8, 0xbe, 0x32, 0x66, 0x3e, 0xb7, 0xea, 0x0a, 0x28, 0x0a, 0xf8, 0x02, 0xc0, 0x17,
-	0x51, 0xca, 0xc2, 0x88, 0x27, 0xd2, 0x6a, 0x28, 0xf1, 0x4e, 0x21, 0xfe, 0x4a, 0x63, 0x85, 0x85,
-	0x12, 0x1f, 0x1f, 0x82, 0xa9, 0x9d, 0x8f, 0xe6, 0x3c, 0x91, 0xd9, 0xc9, 0x9b, 0x5d, 0xd2, 0x6b,
-	0x78, 0x77, 0x74, 0xfd, 0x2c, 0x2f, 0x3b, 0xef, 0x01, 0xab, 0xc3, 0x96, 0x1a, 0x7e, 0x0a, 0x1b,
-	0x01, 0x9f, 0x87, 0xc5, 0xcf, 0x68, 0x2f, 0xf1, 0x43, 0x73, 0x86, 0xa7, 0xa9, 0xce, 0x19, 0x98,
-	0xff, 0x82, 0xb8, 0x07, 0xdb, 0x7f, 0xed, 0x95, 0x64, 0x5a, 0xba, 0xf8, 0x36, 0x93, 0xbb, 0x0f,
-	0x90, 0xcf, 0x18, 0x85, 0x41, 0xae, 0x68, 0x78, 0x46, 0x5e, 0x19, 0x06, 0xf2, 0xd1, 0x33, 0xd8,
-	0xb9, 0x79, 0x75, 0x68, 0xc0, 0xda, 0x11, 0xa5, 0x2e, 0x35, 0x6b, 0xd8, 0x82, 0xcd, 0x37, 0x27,
-	0x74, 0xf8, 0x7a, 0xe8, 0x52, 0x93, 0xe0, 0x16, 0x6c, 0x50, 0xf7, 0xd8, 0x3d, 0x75, 0xa9, 0x59,
-	0x1f, 0x7c, 0x27, 0x80, 0xe5, 0xbb, 0xc9, 0x56, 0x95, 0x27, 0x78, 0x02, 0xcd, 0x2c, 0xc2, 0x07,
-	0xc5, 0x99, 0xfe, 0xb3, 0xdf, 0x6d, 0x67, 0x15, 0x25, 0x5f, 0x38, 0xa7, 0x86, 0xa7, 0xb0, 0xa6,
-	0xfc, 0xa1, 0x53, 0xdd, 0xb5, 0xca, 0xc8, 0xbd, 0x95, 0x1c, 0x3d, 0xf3, 0x80, 0xbc, 0xec, 0x5c,
-	0x5e, 0xd9, 0xe4, 0xe7, 0x95, 0x5d, 0xfb, 0xbc, 0xb0, 0xc9, 0xe5, 0xc2, 0x26, 0x3f, 0x16, 0x36,
-	0xf9, 0xb5, 0xb0, 0xc9, 0xd7, 0xdf, 0x76, 0x6d, 0xbc, 0xae, 0xde, 0xe6, 0x93, 0x3f, 0x01, 0x00,
-	0x00, 0xff, 0xff, 0x79, 0xbc, 0x49, 0x95, 0xe1, 0x03, 0x00, 0x00,
+	// 487 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x9c, 0x53, 0xc1, 0x6e, 0xd3, 0x40,
+	0x10, 0xcd, 0xda, 0xa5, 0x4d, 0x86, 0x14, 0xa1, 0x91, 0xa0, 0xae, 0x1b, 0x59, 0x61, 0xcb, 0x21,
+	0x17, 0x52, 0x35, 0x70, 0x40, 0x82, 0x4b, 0x21, 0x12, 0x8a, 0x04, 0x01, 0x59, 0x20, 0x8e, 0x91,
+	0xe3, 0xdd, 0xa6, 0x2b, 0x52, 0xef, 0xe2, 0xb5, 0x83, 0xb8, 0x20, 0x8e, 0x1c, 0xf9, 0xac, 0x4a,
+	0x5c, 0x38, 0x72, 0xa4, 0xe1, 0x47, 0x50, 0xd6, 0x71, 0xed, 0xe0, 0x34, 0x07, 0x4e, 0xde, 0x9d,
+	0xf7, 0x66, 0xf6, 0xf9, 0xcd, 0x0c, 0x34, 0x02, 0x25, 0xba, 0x2a, 0x96, 0x89, 0xc4, 0xfa, 0xec,
+	0x38, 0x98, 0xaa, 0xb3, 0xe0, 0xd8, 0x7d, 0x30, 0x11, 0xc9, 0x59, 0x3a, 0xee, 0x86, 0xf2, 0xfc,
+	0x68, 0x22, 0x27, 0xf2, 0xc8, 0x10, 0xc6, 0xe9, 0xa9, 0xb9, 0x99, 0x8b, 0x39, 0x65, 0x89, 0xf4,
+	0x00, 0xf6, 0x4f, 0x66, 0x81, 0x98, 0x06, 0xe3, 0x29, 0xf7, 0xb9, 0x96, 0x69, 0x1c, 0x72, 0xed,
+	0xf3, 0x8f, 0x29, 0xd7, 0x09, 0xfd, 0x00, 0xee, 0x3a, 0x50, 0x2b, 0x19, 0x69, 0x8e, 0x8f, 0x60,
+	0x87, 0xf1, 0x99, 0x08, 0xb9, 0x76, 0x48, 0xdb, 0xee, 0xdc, 0xec, 0xb9, 0xdd, 0x5c, 0x45, 0xf7,
+	0xb9, 0x8c, 0x92, 0x40, 0x44, 0x3c, 0xee, 0x67, 0x0c, 0x3f, 0xa7, 0xe2, 0x1e, 0xec, 0x84, 0x2a,
+	0x1d, 0x09, 0xa6, 0x1d, 0xab, 0x6d, 0x77, 0x6c, 0x7f, 0x3b, 0x54, 0xe9, 0x80, 0x69, 0xba, 0x0f,
+	0x7b, 0x2f, 0x85, 0x4e, 0xde, 0x48, 0x56, 0xd1, 0xf1, 0x1e, 0x9c, 0x2a, 0xb4, 0x54, 0xf1, 0x04,
+	0x76, 0x95, 0x64, 0xa3, 0x38, 0x07, 0x96, 0x5a, 0xee, 0x16, 0x5a, 0x56, 0xd2, 0x9a, 0xaa, 0x74,
+	0xa3, 0x5f, 0xa0, 0x59, 0x46, 0x11, 0x61, 0x2b, 0x0a, 0xce, 0xb9, 0x43, 0xda, 0xa4, 0xd3, 0xf0,
+	0xcd, 0x19, 0x5b, 0xd0, 0x58, 0x7c, 0xb5, 0x0a, 0x42, 0xee, 0x58, 0x06, 0x28, 0x02, 0xf8, 0x14,
+	0x20, 0xcc, 0xff, 0x55, 0x3b, 0xb6, 0x79, 0xbb, 0xb5, 0xc6, 0x87, 0x42, 0x41, 0x89, 0x4f, 0x3f,
+	0x01, 0x56, 0x19, 0x6b, 0x55, 0x94, 0xcc, 0xb6, 0xfe, 0xcb, 0x6c, 0x7b, 0xc5, 0xec, 0x6f, 0x04,
+	0x6e, 0xff, 0x9b, 0x86, 0x87, 0xb0, 0x9b, 0xdb, 0x38, 0x2a, 0x09, 0x68, 0xe6, 0xc1, 0xe1, 0x42,
+	0xc8, 0x01, 0x34, 0xb2, 0xea, 0x23, 0xc1, 0x96, 0x76, 0xd4, 0xb3, 0xc0, 0x80, 0x61, 0x0f, 0xea,
+	0x89, 0x54, 0x72, 0x2a, 0x27, 0x9f, 0x1d, 0xbb, 0x4d, 0x56, 0xfb, 0xf0, 0x76, 0x89, 0x0c, 0xa2,
+	0x53, 0xe9, 0x5f, 0xf1, 0xe8, 0x63, 0x68, 0x96, 0x11, 0xec, 0xc0, 0x8d, 0x48, 0xb2, 0xab, 0x46,
+	0x62, 0x51, 0x60, 0xf8, 0xee, 0xd5, 0xc9, 0x50, 0x32, 0xee, 0x67, 0x04, 0xea, 0x42, 0x3d, 0x0f,
+	0xe1, 0x2d, 0xb0, 0x06, 0x7d, 0x23, 0xd8, 0xf6, 0x2d, 0xd1, 0xef, 0xfd, 0x20, 0x80, 0xe5, 0xd6,
+	0x2e, 0xe6, 0x87, 0xc7, 0xf8, 0x1a, 0xb6, 0x16, 0x27, 0xbc, 0x57, 0x54, 0xbd, 0x66, 0xe8, 0x5c,
+	0xba, 0x89, 0x92, 0x0d, 0x1f, 0xad, 0x21, 0x83, 0x3b, 0x2f, 0x78, 0x52, 0xdd, 0x12, 0x3c, 0x2c,
+	0xd2, 0xaf, 0x5d, 0x30, 0xf7, 0xfe, 0x66, 0x52, 0xfe, 0xca, 0xb3, 0xd6, 0xc5, 0xa5, 0x47, 0x7e,
+	0x5d, 0x7a, 0xb5, 0xaf, 0x73, 0x8f, 0x5c, 0xcc, 0x3d, 0xf2, 0x73, 0xee, 0x91, 0xdf, 0x73, 0x8f,
+	0x7c, 0xff, 0xe3, 0xd5, 0xc6, 0xdb, 0x66, 0x95, 0x1f, 0xfe, 0x0d, 0x00, 0x00, 0xff, 0xff, 0x19,
+	0x94, 0x95, 0x2c, 0x10, 0x04, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -487,7 +560,7 @@ const _ = grpc.SupportPackageIsVersion4
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type PodResourcesListerClient interface {
 	List(ctx context.Context, in *ListPodResourcesRequest, opts ...grpc.CallOption) (*ListPodResourcesResponse, error)
-	Watch(ctx context.Context, in *WatchPodResourcesRequest, opts ...grpc.CallOption) (PodResourcesLister_WatchClient, error)
+	GetAvailableResources(ctx context.Context, in *AvailableResourcesRequest, opts ...grpc.CallOption) (*AvailableResourcesResponse, error)
 }
 
 type podResourcesListerClient struct {
@@ -507,42 +580,19 @@ func (c *podResourcesListerClient) List(ctx context.Context, in *ListPodResource
 	return out, nil
 }
 
-func (c *podResourcesListerClient) Watch(ctx context.Context, in *WatchPodResourcesRequest, opts ...grpc.CallOption) (PodResourcesLister_WatchClient, error) {
-	stream, err := c.cc.NewStream(ctx, &_PodResourcesLister_serviceDesc.Streams[0], "/v1alpha1.PodResourcesLister/Watch", opts...)
+func (c *podResourcesListerClient) GetAvailableResources(ctx context.Context, in *AvailableResourcesRequest, opts ...grpc.CallOption) (*AvailableResourcesResponse, error) {
+	out := new(AvailableResourcesResponse)
+	err := c.cc.Invoke(ctx, "/v1alpha1.PodResourcesLister/GetAvailableResources", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
-	x := &podResourcesListerWatchClient{stream}
-	if err := x.ClientStream.SendMsg(in); err != nil {
-		return nil, err
-	}
-	if err := x.ClientStream.CloseSend(); err != nil {
-		return nil, err
-	}
-	return x, nil
-}
-
-type PodResourcesLister_WatchClient interface {
-	Recv() (*WatchPodResourcesResponse, error)
-	grpc.ClientStream
-}
-
-type podResourcesListerWatchClient struct {
-	grpc.ClientStream
-}
-
-func (x *podResourcesListerWatchClient) Recv() (*WatchPodResourcesResponse, error) {
-	m := new(WatchPodResourcesResponse)
-	if err := x.ClientStream.RecvMsg(m); err != nil {
-		return nil, err
-	}
-	return m, nil
+	return out, nil
 }
 
 // PodResourcesListerServer is the server API for PodResourcesLister service.
 type PodResourcesListerServer interface {
 	List(context.Context, *ListPodResourcesRequest) (*ListPodResourcesResponse, error)
-	Watch(*WatchPodResourcesRequest, PodResourcesLister_WatchServer) error
+	GetAvailableResources(context.Context, *AvailableResourcesRequest) (*AvailableResourcesResponse, error)
 }
 
 // UnimplementedPodResourcesListerServer can be embedded to have forward compatible implementations.
@@ -552,8 +602,8 @@ type UnimplementedPodResourcesListerServer struct {
 func (*UnimplementedPodResourcesListerServer) List(ctx context.Context, req *ListPodResourcesRequest) (*ListPodResourcesResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method List not implemented")
 }
-func (*UnimplementedPodResourcesListerServer) Watch(req *WatchPodResourcesRequest, srv PodResourcesLister_WatchServer) error {
-	return status.Errorf(codes.Unimplemented, "method Watch not implemented")
+func (*UnimplementedPodResourcesListerServer) GetAvailableResources(ctx context.Context, req *AvailableResourcesRequest) (*AvailableResourcesResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetAvailableResources not implemented")
 }
 
 func RegisterPodResourcesListerServer(s *grpc.Server, srv PodResourcesListerServer) {
@@ -578,25 +628,22 @@ func _PodResourcesLister_List_Handler(srv interface{}, ctx context.Context, dec 
 	return interceptor(ctx, in, info, handler)
 }
 
-func _PodResourcesLister_Watch_Handler(srv interface{}, stream grpc.ServerStream) error {
-	m := new(WatchPodResourcesRequest)
-	if err := stream.RecvMsg(m); err != nil {
-		return err
+func _PodResourcesLister_GetAvailableResources_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(AvailableResourcesRequest)
+	if err := dec(in); err != nil {
+		return nil, err
 	}
-	return srv.(PodResourcesListerServer).Watch(m, &podResourcesListerWatchServer{stream})
-}
-
-type PodResourcesLister_WatchServer interface {
-	Send(*WatchPodResourcesResponse) error
-	grpc.ServerStream
-}
-
-type podResourcesListerWatchServer struct {
-	grpc.ServerStream
-}
-
-func (x *podResourcesListerWatchServer) Send(m *WatchPodResourcesResponse) error {
-	return x.ServerStream.SendMsg(m)
+	if interceptor == nil {
+		return srv.(PodResourcesListerServer).GetAvailableResources(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/v1alpha1.PodResourcesLister/GetAvailableResources",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PodResourcesListerServer).GetAvailableResources(ctx, req.(*AvailableResourcesRequest))
+	}
+	return interceptor(ctx, in, info, handler)
 }
 
 var _PodResourcesLister_serviceDesc = grpc.ServiceDesc{
@@ -607,15 +654,92 @@ var _PodResourcesLister_serviceDesc = grpc.ServiceDesc{
 			MethodName: "List",
 			Handler:    _PodResourcesLister_List_Handler,
 		},
-	},
-	Streams: []grpc.StreamDesc{
 		{
-			StreamName:    "Watch",
-			Handler:       _PodResourcesLister_Watch_Handler,
-			ServerStreams: true,
+			MethodName: "GetAvailableResources",
+			Handler:    _PodResourcesLister_GetAvailableResources_Handler,
 		},
 	},
+	Streams:  []grpc.StreamDesc{},
 	Metadata: "api.proto",
+}
+
+func (m *AvailableResourcesRequest) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *AvailableResourcesRequest) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *AvailableResourcesRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	return len(dAtA) - i, nil
+}
+
+func (m *AvailableResourcesResponse) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *AvailableResourcesResponse) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *AvailableResourcesResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.CpuIds) > 0 {
+		dAtA2 := make([]byte, len(m.CpuIds)*10)
+		var j1 int
+		for _, num1 := range m.CpuIds {
+			num := uint64(num1)
+			for num >= 1<<7 {
+				dAtA2[j1] = uint8(uint64(num)&0x7f | 0x80)
+				num >>= 7
+				j1++
+			}
+			dAtA2[j1] = uint8(num)
+			j1++
+		}
+		i -= j1
+		copy(dAtA[i:], dAtA2[:j1])
+		i = encodeVarintApi(dAtA, i, uint64(j1))
+		i--
+		dAtA[i] = 0x12
+	}
+	if len(m.Devices) > 0 {
+		for iNdEx := len(m.Devices) - 1; iNdEx >= 0; iNdEx-- {
+			{
+				size, err := m.Devices[iNdEx].MarshalToSizedBuffer(dAtA[:i])
+				if err != nil {
+					return 0, err
+				}
+				i -= size
+				i = encodeVarintApi(dAtA, i, uint64(size))
+			}
+			i--
+			dAtA[i] = 0xa
+		}
+	}
+	return len(dAtA) - i, nil
 }
 
 func (m *ListPodResourcesRequest) Marshal() (dAtA []byte, err error) {
@@ -678,71 +802,6 @@ func (m *ListPodResourcesResponse) MarshalToSizedBuffer(dAtA []byte) (int, error
 	return len(dAtA) - i, nil
 }
 
-func (m *WatchPodResourcesRequest) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
-	dAtA = make([]byte, size)
-	n, err := m.MarshalToSizedBuffer(dAtA[:size])
-	if err != nil {
-		return nil, err
-	}
-	return dAtA[:n], nil
-}
-
-func (m *WatchPodResourcesRequest) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
-	return m.MarshalToSizedBuffer(dAtA[:size])
-}
-
-func (m *WatchPodResourcesRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	_ = i
-	var l int
-	_ = l
-	return len(dAtA) - i, nil
-}
-
-func (m *WatchPodResourcesResponse) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
-	dAtA = make([]byte, size)
-	n, err := m.MarshalToSizedBuffer(dAtA[:size])
-	if err != nil {
-		return nil, err
-	}
-	return dAtA[:n], nil
-}
-
-func (m *WatchPodResourcesResponse) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
-	return m.MarshalToSizedBuffer(dAtA[:size])
-}
-
-func (m *WatchPodResourcesResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	_ = i
-	var l int
-	_ = l
-	if len(m.PodResources) > 0 {
-		for iNdEx := len(m.PodResources) - 1; iNdEx >= 0; iNdEx-- {
-			{
-				size, err := m.PodResources[iNdEx].MarshalToSizedBuffer(dAtA[:i])
-				if err != nil {
-					return 0, err
-				}
-				i -= size
-				i = encodeVarintApi(dAtA, i, uint64(size))
-			}
-			i--
-			dAtA[i] = 0x12
-		}
-	}
-	if m.Action != 0 {
-		i = encodeVarintApi(dAtA, i, uint64(m.Action))
-		i--
-		dAtA[i] = 0x8
-	}
-	return len(dAtA) - i, nil
-}
-
 func (m *PodResources) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
@@ -763,11 +822,6 @@ func (m *PodResources) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
-	if m.ResourceVersion != 0 {
-		i = encodeVarintApi(dAtA, i, uint64(m.ResourceVersion))
-		i--
-		dAtA[i] = 0x20
-	}
 	if len(m.Containers) > 0 {
 		for iNdEx := len(m.Containers) - 1; iNdEx >= 0; iNdEx-- {
 			{
@@ -819,6 +873,25 @@ func (m *ContainerResources) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
+	if len(m.CpuIds) > 0 {
+		dAtA4 := make([]byte, len(m.CpuIds)*10)
+		var j3 int
+		for _, num1 := range m.CpuIds {
+			num := uint64(num1)
+			for num >= 1<<7 {
+				dAtA4[j3] = uint8(uint64(num)&0x7f | 0x80)
+				num >>= 7
+				j3++
+			}
+			dAtA4[j3] = uint8(num)
+			j3++
+		}
+		i -= j3
+		copy(dAtA[i:], dAtA4[:j3])
+		i = encodeVarintApi(dAtA, i, uint64(j3))
+		i--
+		dAtA[i] = 0x1a
+	}
 	if len(m.Devices) > 0 {
 		for iNdEx := len(m.Devices) - 1; iNdEx >= 0; iNdEx-- {
 			{
@@ -863,14 +936,24 @@ func (m *ContainerDevices) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
-	if len(m.DeviceIds) > 0 {
-		for iNdEx := len(m.DeviceIds) - 1; iNdEx >= 0; iNdEx-- {
-			i -= len(m.DeviceIds[iNdEx])
-			copy(dAtA[i:], m.DeviceIds[iNdEx])
-			i = encodeVarintApi(dAtA, i, uint64(len(m.DeviceIds[iNdEx])))
-			i--
-			dAtA[i] = 0x12
+	if m.Topology != nil {
+		{
+			size, err := m.Topology.MarshalToSizedBuffer(dAtA[:i])
+			if err != nil {
+				return 0, err
+			}
+			i -= size
+			i = encodeVarintApi(dAtA, i, uint64(size))
 		}
+		i--
+		dAtA[i] = 0x1a
+	}
+	if len(m.DeviceId) > 0 {
+		i -= len(m.DeviceId)
+		copy(dAtA[i:], m.DeviceId)
+		i = encodeVarintApi(dAtA, i, uint64(len(m.DeviceId)))
+		i--
+		dAtA[i] = 0x12
 	}
 	if len(m.ResourceName) > 0 {
 		i -= len(m.ResourceName)
@@ -878,6 +961,71 @@ func (m *ContainerDevices) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 		i = encodeVarintApi(dAtA, i, uint64(len(m.ResourceName)))
 		i--
 		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *TopologyInfo) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *TopologyInfo) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *TopologyInfo) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.Nodes) > 0 {
+		for iNdEx := len(m.Nodes) - 1; iNdEx >= 0; iNdEx-- {
+			{
+				size, err := m.Nodes[iNdEx].MarshalToSizedBuffer(dAtA[:i])
+				if err != nil {
+					return 0, err
+				}
+				i -= size
+				i = encodeVarintApi(dAtA, i, uint64(size))
+			}
+			i--
+			dAtA[i] = 0xa
+		}
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *NUMANode) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *NUMANode) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *NUMANode) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.ID != 0 {
+		i = encodeVarintApi(dAtA, i, uint64(m.ID))
+		i--
+		dAtA[i] = 0x8
 	}
 	return len(dAtA) - i, nil
 }
@@ -893,6 +1041,37 @@ func encodeVarintApi(dAtA []byte, offset int, v uint64) int {
 	dAtA[offset] = uint8(v)
 	return base
 }
+func (m *AvailableResourcesRequest) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	return n
+}
+
+func (m *AvailableResourcesResponse) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if len(m.Devices) > 0 {
+		for _, e := range m.Devices {
+			l = e.Size()
+			n += 1 + l + sovApi(uint64(l))
+		}
+	}
+	if len(m.CpuIds) > 0 {
+		l = 0
+		for _, e := range m.CpuIds {
+			l += sovApi(uint64(e))
+		}
+		n += 1 + sovApi(uint64(l)) + l
+	}
+	return n
+}
+
 func (m *ListPodResourcesRequest) Size() (n int) {
 	if m == nil {
 		return 0
@@ -908,33 +1087,6 @@ func (m *ListPodResourcesResponse) Size() (n int) {
 	}
 	var l int
 	_ = l
-	if len(m.PodResources) > 0 {
-		for _, e := range m.PodResources {
-			l = e.Size()
-			n += 1 + l + sovApi(uint64(l))
-		}
-	}
-	return n
-}
-
-func (m *WatchPodResourcesRequest) Size() (n int) {
-	if m == nil {
-		return 0
-	}
-	var l int
-	_ = l
-	return n
-}
-
-func (m *WatchPodResourcesResponse) Size() (n int) {
-	if m == nil {
-		return 0
-	}
-	var l int
-	_ = l
-	if m.Action != 0 {
-		n += 1 + sovApi(uint64(m.Action))
-	}
 	if len(m.PodResources) > 0 {
 		for _, e := range m.PodResources {
 			l = e.Size()
@@ -964,9 +1116,6 @@ func (m *PodResources) Size() (n int) {
 			n += 1 + l + sovApi(uint64(l))
 		}
 	}
-	if m.ResourceVersion != 0 {
-		n += 1 + sovApi(uint64(m.ResourceVersion))
-	}
 	return n
 }
 
@@ -986,6 +1135,13 @@ func (m *ContainerResources) Size() (n int) {
 			n += 1 + l + sovApi(uint64(l))
 		}
 	}
+	if len(m.CpuIds) > 0 {
+		l = 0
+		for _, e := range m.CpuIds {
+			l += sovApi(uint64(e))
+		}
+		n += 1 + sovApi(uint64(l)) + l
+	}
 	return n
 }
 
@@ -999,11 +1155,40 @@ func (m *ContainerDevices) Size() (n int) {
 	if l > 0 {
 		n += 1 + l + sovApi(uint64(l))
 	}
-	if len(m.DeviceIds) > 0 {
-		for _, s := range m.DeviceIds {
-			l = len(s)
+	l = len(m.DeviceId)
+	if l > 0 {
+		n += 1 + l + sovApi(uint64(l))
+	}
+	if m.Topology != nil {
+		l = m.Topology.Size()
+		n += 1 + l + sovApi(uint64(l))
+	}
+	return n
+}
+
+func (m *TopologyInfo) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if len(m.Nodes) > 0 {
+		for _, e := range m.Nodes {
+			l = e.Size()
 			n += 1 + l + sovApi(uint64(l))
 		}
+	}
+	return n
+}
+
+func (m *NUMANode) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if m.ID != 0 {
+		n += 1 + sovApi(uint64(m.ID))
 	}
 	return n
 }
@@ -1013,6 +1198,31 @@ func sovApi(x uint64) (n int) {
 }
 func sozApi(x uint64) (n int) {
 	return sovApi(uint64((x << 1) ^ uint64((int64(x) >> 63))))
+}
+func (this *AvailableResourcesRequest) String() string {
+	if this == nil {
+		return "nil"
+	}
+	s := strings.Join([]string{`&AvailableResourcesRequest{`,
+		`}`,
+	}, "")
+	return s
+}
+func (this *AvailableResourcesResponse) String() string {
+	if this == nil {
+		return "nil"
+	}
+	repeatedStringForDevices := "[]*ContainerDevices{"
+	for _, f := range this.Devices {
+		repeatedStringForDevices += strings.Replace(f.String(), "ContainerDevices", "ContainerDevices", 1) + ","
+	}
+	repeatedStringForDevices += "}"
+	s := strings.Join([]string{`&AvailableResourcesResponse{`,
+		`Devices:` + repeatedStringForDevices + `,`,
+		`CpuIds:` + fmt.Sprintf("%v", this.CpuIds) + `,`,
+		`}`,
+	}, "")
+	return s
 }
 func (this *ListPodResourcesRequest) String() string {
 	if this == nil {
@@ -1038,31 +1248,6 @@ func (this *ListPodResourcesResponse) String() string {
 	}, "")
 	return s
 }
-func (this *WatchPodResourcesRequest) String() string {
-	if this == nil {
-		return "nil"
-	}
-	s := strings.Join([]string{`&WatchPodResourcesRequest{`,
-		`}`,
-	}, "")
-	return s
-}
-func (this *WatchPodResourcesResponse) String() string {
-	if this == nil {
-		return "nil"
-	}
-	repeatedStringForPodResources := "[]*PodResources{"
-	for _, f := range this.PodResources {
-		repeatedStringForPodResources += strings.Replace(f.String(), "PodResources", "PodResources", 1) + ","
-	}
-	repeatedStringForPodResources += "}"
-	s := strings.Join([]string{`&WatchPodResourcesResponse{`,
-		`Action:` + fmt.Sprintf("%v", this.Action) + `,`,
-		`PodResources:` + repeatedStringForPodResources + `,`,
-		`}`,
-	}, "")
-	return s
-}
 func (this *PodResources) String() string {
 	if this == nil {
 		return "nil"
@@ -1076,7 +1261,6 @@ func (this *PodResources) String() string {
 		`Name:` + fmt.Sprintf("%v", this.Name) + `,`,
 		`Namespace:` + fmt.Sprintf("%v", this.Namespace) + `,`,
 		`Containers:` + repeatedStringForContainers + `,`,
-		`ResourceVersion:` + fmt.Sprintf("%v", this.ResourceVersion) + `,`,
 		`}`,
 	}, "")
 	return s
@@ -1093,6 +1277,7 @@ func (this *ContainerResources) String() string {
 	s := strings.Join([]string{`&ContainerResources{`,
 		`Name:` + fmt.Sprintf("%v", this.Name) + `,`,
 		`Devices:` + repeatedStringForDevices + `,`,
+		`CpuIds:` + fmt.Sprintf("%v", this.CpuIds) + `,`,
 		`}`,
 	}, "")
 	return s
@@ -1103,7 +1288,33 @@ func (this *ContainerDevices) String() string {
 	}
 	s := strings.Join([]string{`&ContainerDevices{`,
 		`ResourceName:` + fmt.Sprintf("%v", this.ResourceName) + `,`,
-		`DeviceIds:` + fmt.Sprintf("%v", this.DeviceIds) + `,`,
+		`DeviceId:` + fmt.Sprintf("%v", this.DeviceId) + `,`,
+		`Topology:` + strings.Replace(this.Topology.String(), "TopologyInfo", "TopologyInfo", 1) + `,`,
+		`}`,
+	}, "")
+	return s
+}
+func (this *TopologyInfo) String() string {
+	if this == nil {
+		return "nil"
+	}
+	repeatedStringForNodes := "[]*NUMANode{"
+	for _, f := range this.Nodes {
+		repeatedStringForNodes += strings.Replace(f.String(), "NUMANode", "NUMANode", 1) + ","
+	}
+	repeatedStringForNodes += "}"
+	s := strings.Join([]string{`&TopologyInfo{`,
+		`Nodes:` + repeatedStringForNodes + `,`,
+		`}`,
+	}, "")
+	return s
+}
+func (this *NUMANode) String() string {
+	if this == nil {
+		return "nil"
+	}
+	s := strings.Join([]string{`&NUMANode{`,
+		`ID:` + fmt.Sprintf("%v", this.ID) + `,`,
 		`}`,
 	}, "")
 	return s
@@ -1115,6 +1326,222 @@ func valueToStringApi(v interface{}) string {
 	}
 	pv := reflect.Indirect(rv).Interface()
 	return fmt.Sprintf("*%v", pv)
+}
+func (m *AvailableResourcesRequest) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowApi
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: AvailableResourcesRequest: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: AvailableResourcesRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		default:
+			iNdEx = preIndex
+			skippy, err := skipApi(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if skippy < 0 {
+				return ErrInvalidLengthApi
+			}
+			if (iNdEx + skippy) < 0 {
+				return ErrInvalidLengthApi
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *AvailableResourcesResponse) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowApi
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: AvailableResourcesResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: AvailableResourcesResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Devices", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowApi
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthApi
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthApi
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Devices = append(m.Devices, &ContainerDevices{})
+			if err := m.Devices[len(m.Devices)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 2:
+			if wireType == 0 {
+				var v int64
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return ErrIntOverflowApi
+					}
+					if iNdEx >= l {
+						return io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					v |= int64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				m.CpuIds = append(m.CpuIds, v)
+			} else if wireType == 2 {
+				var packedLen int
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return ErrIntOverflowApi
+					}
+					if iNdEx >= l {
+						return io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					packedLen |= int(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				if packedLen < 0 {
+					return ErrInvalidLengthApi
+				}
+				postIndex := iNdEx + packedLen
+				if postIndex < 0 {
+					return ErrInvalidLengthApi
+				}
+				if postIndex > l {
+					return io.ErrUnexpectedEOF
+				}
+				var elementCount int
+				var count int
+				for _, integer := range dAtA[iNdEx:postIndex] {
+					if integer < 128 {
+						count++
+					}
+				}
+				elementCount = count
+				if elementCount != 0 && len(m.CpuIds) == 0 {
+					m.CpuIds = make([]int64, 0, elementCount)
+				}
+				for iNdEx < postIndex {
+					var v int64
+					for shift := uint(0); ; shift += 7 {
+						if shift >= 64 {
+							return ErrIntOverflowApi
+						}
+						if iNdEx >= l {
+							return io.ErrUnexpectedEOF
+						}
+						b := dAtA[iNdEx]
+						iNdEx++
+						v |= int64(b&0x7F) << shift
+						if b < 0x80 {
+							break
+						}
+					}
+					m.CpuIds = append(m.CpuIds, v)
+				}
+			} else {
+				return fmt.Errorf("proto: wrong wireType = %d for field CpuIds", wireType)
+			}
+		default:
+			iNdEx = preIndex
+			skippy, err := skipApi(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if skippy < 0 {
+				return ErrInvalidLengthApi
+			}
+			if (iNdEx + skippy) < 0 {
+				return ErrInvalidLengthApi
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
 }
 func (m *ListPodResourcesRequest) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
@@ -1199,165 +1626,6 @@ func (m *ListPodResourcesResponse) Unmarshal(dAtA []byte) error {
 		}
 		switch fieldNum {
 		case 1:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field PodResources", wireType)
-			}
-			var msglen int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowApi
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				msglen |= int(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			if msglen < 0 {
-				return ErrInvalidLengthApi
-			}
-			postIndex := iNdEx + msglen
-			if postIndex < 0 {
-				return ErrInvalidLengthApi
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.PodResources = append(m.PodResources, &PodResources{})
-			if err := m.PodResources[len(m.PodResources)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
-				return err
-			}
-			iNdEx = postIndex
-		default:
-			iNdEx = preIndex
-			skippy, err := skipApi(dAtA[iNdEx:])
-			if err != nil {
-				return err
-			}
-			if skippy < 0 {
-				return ErrInvalidLengthApi
-			}
-			if (iNdEx + skippy) < 0 {
-				return ErrInvalidLengthApi
-			}
-			if (iNdEx + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			iNdEx += skippy
-		}
-	}
-
-	if iNdEx > l {
-		return io.ErrUnexpectedEOF
-	}
-	return nil
-}
-func (m *WatchPodResourcesRequest) Unmarshal(dAtA []byte) error {
-	l := len(dAtA)
-	iNdEx := 0
-	for iNdEx < l {
-		preIndex := iNdEx
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if shift >= 64 {
-				return ErrIntOverflowApi
-			}
-			if iNdEx >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := dAtA[iNdEx]
-			iNdEx++
-			wire |= uint64(b&0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		if wireType == 4 {
-			return fmt.Errorf("proto: WatchPodResourcesRequest: wiretype end group for non-group")
-		}
-		if fieldNum <= 0 {
-			return fmt.Errorf("proto: WatchPodResourcesRequest: illegal tag %d (wire type %d)", fieldNum, wire)
-		}
-		switch fieldNum {
-		default:
-			iNdEx = preIndex
-			skippy, err := skipApi(dAtA[iNdEx:])
-			if err != nil {
-				return err
-			}
-			if skippy < 0 {
-				return ErrInvalidLengthApi
-			}
-			if (iNdEx + skippy) < 0 {
-				return ErrInvalidLengthApi
-			}
-			if (iNdEx + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			iNdEx += skippy
-		}
-	}
-
-	if iNdEx > l {
-		return io.ErrUnexpectedEOF
-	}
-	return nil
-}
-func (m *WatchPodResourcesResponse) Unmarshal(dAtA []byte) error {
-	l := len(dAtA)
-	iNdEx := 0
-	for iNdEx < l {
-		preIndex := iNdEx
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if shift >= 64 {
-				return ErrIntOverflowApi
-			}
-			if iNdEx >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := dAtA[iNdEx]
-			iNdEx++
-			wire |= uint64(b&0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		if wireType == 4 {
-			return fmt.Errorf("proto: WatchPodResourcesResponse: wiretype end group for non-group")
-		}
-		if fieldNum <= 0 {
-			return fmt.Errorf("proto: WatchPodResourcesResponse: illegal tag %d (wire type %d)", fieldNum, wire)
-		}
-		switch fieldNum {
-		case 1:
-			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Action", wireType)
-			}
-			m.Action = 0
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowApi
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				m.Action |= WatchPodAction(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-		case 2:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field PodResources", wireType)
 			}
@@ -1542,25 +1810,6 @@ func (m *PodResources) Unmarshal(dAtA []byte) error {
 				return err
 			}
 			iNdEx = postIndex
-		case 4:
-			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field ResourceVersion", wireType)
-			}
-			m.ResourceVersion = 0
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowApi
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				m.ResourceVersion |= int64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
 		default:
 			iNdEx = preIndex
 			skippy, err := skipApi(dAtA[iNdEx:])
@@ -1680,6 +1929,82 @@ func (m *ContainerResources) Unmarshal(dAtA []byte) error {
 				return err
 			}
 			iNdEx = postIndex
+		case 3:
+			if wireType == 0 {
+				var v int64
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return ErrIntOverflowApi
+					}
+					if iNdEx >= l {
+						return io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					v |= int64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				m.CpuIds = append(m.CpuIds, v)
+			} else if wireType == 2 {
+				var packedLen int
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return ErrIntOverflowApi
+					}
+					if iNdEx >= l {
+						return io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					packedLen |= int(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				if packedLen < 0 {
+					return ErrInvalidLengthApi
+				}
+				postIndex := iNdEx + packedLen
+				if postIndex < 0 {
+					return ErrInvalidLengthApi
+				}
+				if postIndex > l {
+					return io.ErrUnexpectedEOF
+				}
+				var elementCount int
+				var count int
+				for _, integer := range dAtA[iNdEx:postIndex] {
+					if integer < 128 {
+						count++
+					}
+				}
+				elementCount = count
+				if elementCount != 0 && len(m.CpuIds) == 0 {
+					m.CpuIds = make([]int64, 0, elementCount)
+				}
+				for iNdEx < postIndex {
+					var v int64
+					for shift := uint(0); ; shift += 7 {
+						if shift >= 64 {
+							return ErrIntOverflowApi
+						}
+						if iNdEx >= l {
+							return io.ErrUnexpectedEOF
+						}
+						b := dAtA[iNdEx]
+						iNdEx++
+						v |= int64(b&0x7F) << shift
+						if b < 0x80 {
+							break
+						}
+					}
+					m.CpuIds = append(m.CpuIds, v)
+				}
+			} else {
+				return fmt.Errorf("proto: wrong wireType = %d for field CpuIds", wireType)
+			}
 		default:
 			iNdEx = preIndex
 			skippy, err := skipApi(dAtA[iNdEx:])
@@ -1767,7 +2092,7 @@ func (m *ContainerDevices) Unmarshal(dAtA []byte) error {
 			iNdEx = postIndex
 		case 2:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field DeviceIds", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field DeviceId", wireType)
 			}
 			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
@@ -1795,8 +2120,203 @@ func (m *ContainerDevices) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.DeviceIds = append(m.DeviceIds, string(dAtA[iNdEx:postIndex]))
+			m.DeviceId = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
+		case 3:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Topology", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowApi
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthApi
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthApi
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Topology == nil {
+				m.Topology = &TopologyInfo{}
+			}
+			if err := m.Topology.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipApi(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if skippy < 0 {
+				return ErrInvalidLengthApi
+			}
+			if (iNdEx + skippy) < 0 {
+				return ErrInvalidLengthApi
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *TopologyInfo) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowApi
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: TopologyInfo: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: TopologyInfo: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Nodes", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowApi
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthApi
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthApi
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Nodes = append(m.Nodes, &NUMANode{})
+			if err := m.Nodes[len(m.Nodes)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipApi(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if skippy < 0 {
+				return ErrInvalidLengthApi
+			}
+			if (iNdEx + skippy) < 0 {
+				return ErrInvalidLengthApi
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *NUMANode) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowApi
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: NUMANode: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: NUMANode: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field ID", wireType)
+			}
+			m.ID = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowApi
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.ID |= int64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
 		default:
 			iNdEx = preIndex
 			skippy, err := skipApi(dAtA[iNdEx:])

@@ -18,24 +18,25 @@ package podresources
 
 import (
 	"context"
-	"sync"
 
 	"k8s.io/api/core/v1"
-	"k8s.io/kubernetes/pkg/kubelet/apis/podresources/v1alpha1"
+	pluginapi "k8s.io/kubelet/pkg/apis/deviceplugin/v1beta1"
+	podresourcesapi "k8s.io/kubernetes/pkg/kubelet/apis/podresources/v1alpha1"
+	"github.com/davecgh/go-spew/spew"
+	"k8s.io/klog/v2"
 )
 
 // DevicesProvider knows how to provide the devices used by the given container
 type DevicesProvider interface {
-	GetDevices(podUID, containerName string) []*v1alpha1.ContainerDevices
+	GetDevices(podUID, containerName string) []*podresourcesapi.ContainerDevices
 	UpdateAllocatedDevices()
+	GetAllDevices() map[string]map[string]pluginapi.Device
 }
 
-// TODO fix the name
-// must be compatible with pod.Manager
-type PodNotifier interface {
-	AddPod(pod *v1.Pod)
-	UpdatePod(pod *v1.Pod)
-	DeletePod(pod *v1.Pod)
+// DevicesProvider knows how to provide the devices used by the given container
+type CPUsProvider interface {
+	GetCPUs(podUID, containerName string) []int64
+	GetAllCPUs() []int64
 }
 
 // PodsProvider knows how to provide the pods admitted by the node
@@ -43,135 +44,81 @@ type PodsProvider interface {
 	GetPods() []*v1.Pod
 }
 
-type podInfo struct {
-	Action v1alpha1.WatchPodAction
-	Pod    *v1.Pod
-}
-
 // podResourcesServer implements PodResourcesListerServer
 type podResourcesServer struct {
 	podsProvider    PodsProvider
 	devicesProvider DevicesProvider
-	podSource       chan podInfo
-	lock            sync.RWMutex
-	sinkId          int
-	podSinks        map[int]chan podInfo
+	cpusProvider    CPUsProvider
 }
 
 // NewPodResourcesServer returns a PodResourcesListerServer which lists pods provided by the PodsProvider
 // with device information provided by the DevicesProvider
-func NewPodResourcesServer(podsProvider PodsProvider, devicesProvider DevicesProvider) (v1alpha1.PodResourcesListerServer, PodNotifier) {
-	p := &podResourcesServer{
+func NewPodResourcesServer(podsProvider PodsProvider, devicesProvider DevicesProvider, cpusProvider CPUsProvider) podresourcesapi.PodResourcesListerServer {
+	return &podResourcesServer{
 		podsProvider:    podsProvider,
 		devicesProvider: devicesProvider,
-		podSource:       make(chan podInfo),
-		podSinks:        make(map[int]chan podInfo),
+		cpusProvider:    cpusProvider,
 	}
-	go p.dispatchPods()
-	return p, p
-}
-
-func (p *podResourcesServer) makePodResources(pod *v1.Pod) *v1alpha1.PodResources {
-	pRes := v1alpha1.PodResources{
-		Name:       pod.Name,
-		Namespace:  pod.Namespace,
-		Containers: make([]*v1alpha1.ContainerResources, len(pod.Spec.Containers)),
-	}
-
-	for j, container := range pod.Spec.Containers {
-		pRes.Containers[j] = &v1alpha1.ContainerResources{
-			Name:    container.Name,
-			Devices: p.devicesProvider.GetDevices(string(pod.UID), container.Name),
-		}
-	}
-	return &pRes
 }
 
 // List returns information about the resources assigned to pods on the node
-func (p *podResourcesServer) List(ctx context.Context, req *v1alpha1.ListPodResourcesRequest) (*v1alpha1.ListPodResourcesResponse, error) {
+func (p *podResourcesServer) List(ctx context.Context, req *podresourcesapi.ListPodResourcesRequest) (*podresourcesapi.ListPodResourcesResponse, error) {
 	pods := p.podsProvider.GetPods()
-	podResources := make([]*v1alpha1.PodResources, len(pods))
+	podResources := make([]*podresourcesapi.PodResources, len(pods))
 	p.devicesProvider.UpdateAllocatedDevices()
 
 	for i, pod := range pods {
-		podResources[i] = p.makePodResources(pod)
+		pRes := podresourcesapi.PodResources{
+			Name:       pod.Name,
+			Namespace:  pod.Namespace,
+			Containers: make([]*podresourcesapi.ContainerResources, len(pod.Spec.Containers)),
+		}
+
+		for j, container := range pod.Spec.Containers {
+			pRes.Containers[j] = &podresourcesapi.ContainerResources{
+				Name:    container.Name,
+				Devices: p.devicesProvider.GetDevices(string(pod.UID), container.Name),
+				CpuIds:  p.cpusProvider.GetCPUs(string(pod.UID), container.Name),
+			}
+		}
+		podResources[i] = &pRes
 	}
 
-	return &v1alpha1.ListPodResourcesResponse{
+	return &podresourcesapi.ListPodResourcesResponse{
 		PodResources: podResources,
 	}, nil
 }
 
-func (p *podResourcesServer) AddPod(pod *v1.Pod) {
-	p.podSource <- podInfo{
-		Action: v1alpha1.WatchPodAction_ADDED,
-		Pod:    pod,
-	}
-}
-
-func (p *podResourcesServer) UpdatePod(pod *v1.Pod) {
-	p.podSource <- podInfo{
-		Action: v1alpha1.WatchPodAction_MODIFIED,
-		Pod:    pod,
-	}
-}
-
-func (p *podResourcesServer) DeletePod(pod *v1.Pod) {
-	p.podSource <- podInfo{
-		Action: v1alpha1.WatchPodAction_DELETED,
-		Pod:    pod,
-	}
-}
-
-func (p *podResourcesServer) dispatchPods() {
-	for {
-		info := <-p.podSource
-
-		p.lock.RLock()
-		for _, ch := range p.podSinks {
-			ch <- info
+// AvailableResources returns information about all the devices known by the server
+func (p *podResourcesServer) GetAvailableResources(context.Context, *podresourcesapi.AvailableResourcesRequest) (*podresourcesapi.AvailableResourcesResponse, error) {
+	allDevices := p.devicesProvider.GetAllDevices()
+	klog.Infof("Swati: server.go allDevices: %v", spew.Sdump(allDevices))
+	var respDevs []*podresourcesapi.ContainerDevices
+	for resourceName, resourceDevs := range allDevices {
+	//	var devIds []string
+		// for devId := range resourceDevs {
+		// 	if len(devId) > 0 {
+		// 		// TODO: from where these "" come from?
+		// 		devIds = append(devIds, devId)
+		// 	}
+		// }
+		var numaNode int64
+		for devId, dev := range resourceDevs {
+			for _, node := range dev.GetTopology().GetNodes() {
+				numaNode = node.GetID()
+			}
+			respDevs = append(respDevs, &podresourcesapi.ContainerDevices{
+				ResourceName: resourceName,
+				DeviceId:    devId,
+				Topology: &podresourcesapi.TopologyInfo{Nodes: []*podresourcesapi.NUMANode{{ID: numaNode}}},
+			})
 		}
-		p.lock.RUnlock()
+		klog.Infof("Swati: server.go GetAvailableResources respDevs: %v", spew.Sdump(respDevs))
+
 	}
-}
 
-func (p *podResourcesServer) registerWatcher() (int, chan podInfo) {
-	p.lock.Lock()
-	defer p.lock.Unlock()
-	sinkChan := make(chan podInfo)
-	sinkId := p.sinkId
-	p.sinkId++
-	p.podSinks[sinkId] = sinkChan
-	return sinkId, sinkChan
-}
-
-func (p *podResourcesServer) unregisterWatcher(sinkId int) {
-	p.lock.Lock()
-	defer p.lock.Unlock()
-	// TODO: sink close?
-	delete(p.podSinks, sinkId)
-}
-
-func (p *podResourcesServer) makeWatchPodResponse(info podInfo) *v1alpha1.WatchPodResourcesResponse {
-	resp := v1alpha1.WatchPodResourcesResponse{
-		Action: info.Action,
-		PodResources: []*v1alpha1.PodResources{
-			p.makePodResources(info.Pod),
-		},
-	}
-	return &resp
-}
-
-func (p *podResourcesServer) Watch(req *v1alpha1.WatchPodResourcesRequest, srv v1alpha1.PodResourcesLister_WatchServer) error {
-	sinkId, sinkChan := p.registerWatcher()
-	defer p.unregisterWatcher(sinkId)
-	for {
-		pod := <-sinkChan
-		resp := p.makeWatchPodResponse(pod)
-		err := srv.Send(resp)
-		if err != nil {
-			return err
-		}
-	}
-	return nil
+	return &podresourcesapi.AvailableResourcesResponse{
+		Devices: respDevs,
+		CpuIds:  p.cpusProvider.GetAllCPUs(),
+	}, nil
 }

@@ -28,7 +28,8 @@ replace (
 	k8s.io/kube-scheduler => k8s.io/kube-scheduler v0.19.0
 	k8s.io/kubectl => k8s.io/kubectl v0.19.0
 	k8s.io/kubelet => k8s.io/kubelet v0.19.0
-	k8s.io/kubernetes => k8s.io/kubernetes v1.19.0
+	//k8s.io/kubernetes => k8s.io/kubernetes v1.19.0
+	k8s.io/kubernetes => ../../../k8s.io/kubernetes
 	k8s.io/legacy-cloud-providers => k8s.io/legacy-cloud-providers v0.19.0
 	k8s.io/metrics => k8s.io/metrics v0.19.0
 	k8s.io/sample-apiserver => k8s.io/sample-apiserver v0.19.0

@@ -18,13 +18,10 @@ package main
 
 import (
 	"context"
-	"encoding/json"
-	"fmt"
 	"log"
-	"os"
-	"os/signal"
 	"time"
 
+	"github.com/davecgh/go-spew/spew"
 	flag "github.com/spf13/pflag"
 
 	podresources "k8s.io/kubernetes/pkg/kubelet/apis/podresources"
@@ -34,28 +31,19 @@ import (
 
 const (
 	defaultPodResourcesPath    = "/var/lib/kubelet/pod-resources"
+	defaultNamespace           = "default"
 	defaultPodResourcesTimeout = 10 * time.Second
 	defaultPodResourcesMaxSize = 1024 * 1024 * 16 // 16 Mb
 	// obtained these values from node e2e tests : https://github.com/kubernetes/kubernetes/blob/82baa26905c94398a0d19e1b1ecf54eb8acb6029/test/e2e_node/util.go#L70
 )
 
-func podActionToString(action podresourcesapi.WatchPodAction) string {
-	switch action {
-	case podresourcesapi.WatchPodAction_ADDED:
-		return "ADD"
-	case podresourcesapi.WatchPodAction_MODIFIED:
-		return "MOD"
-	case podresourcesapi.WatchPodAction_DELETED:
-		return "DEL"
-	default:
-		return "???"
-	}
-}
-
 func main() {
 	var err error
 	autoReconnect := flag.BoolP("autoreconnect", "A", false, "don't give up if connection fails.")
 	podResourcesSocketPath := flag.StringP("socket", "S", defaultPodResourcesPath, "podresources socket path.")
+	listNamespace := flag.StringP("listnamespace", "N", defaultNamespace, "namespace to check")
+	endpoint := flag.StringP("endpoint", "E", "list", "List/Watch/GetAvailableResources podresource API Endpoint")
+
 	flag.Parse()
 
 	sockPath, err := kubeletutil.LocalEndpoint(*podResourcesSocketPath, podresources.Socket)
@@ -69,60 +57,66 @@ func main() {
 	}
 	defer conn.Close()
 
-	var watcher podresourcesapi.PodResourcesLister_WatchClient
+	switch *endpoint {
+	case "list":
+		Listing(*autoReconnect, cli, *listNamespace)
+	case "getavailableresources":
+		GetAvailableResources(*autoReconnect, cli)
+	}
+}
+
+func Listing(autoReconnect bool, cli podresourcesapi.PodResourcesListerClient, ns string) {
+	resp, err := cli.List(context.TODO(), &podresourcesapi.ListPodResourcesRequest{})
 	for {
-		watcher, err = cli.Watch(context.TODO(), &podresourcesapi.WatchPodResourcesRequest{})
 		if err == nil {
 			break
 		} else {
-			if !*autoReconnect {
+			if !autoReconnect {
 				log.Fatalf("failed to watch: %v", err)
 			} else {
-				log.Printf("error watching: %v", err)
+				log.Printf("Can't receive response: %v.Get(_) = _, %v", cli, err)
 				time.Sleep(1 * time.Second)
 			}
 		}
+	}
+	showPodResources(resp, ns)
+}
+
+func showPodResources(resp *podresourcesapi.ListPodResourcesResponse, ns string) {
+	for _, podResource := range resp.GetPodResources() {
+		if podResource.GetNamespace() != ns {
+			log.Printf("SKIP pod %q\n", podResource.Name)
+			continue
+		}
+		for _, container := range podResource.GetContainers() {
+			log.Printf("container %q\n", spew.Sdump(container))
+		}
 
 	}
+}
 
-	respsCh := make(chan *podresourcesapi.WatchPodResourcesResponse)
-	stopCh := make(chan bool, 1)
-	sigsCh := make(chan os.Signal, 1)
-	signal.Notify(sigsCh, os.Interrupt)
-
-	started := time.Now()
-
-	go func() {
-		for {
-			resp, err := watcher.Recv()
-			if err != nil {
-				log.Printf("%s", err)
-				stopCh <- true
-				break
-			}
-			respsCh <- resp
-		}
-	}()
-
-	var messages uint64
-
-	done := false
-	for !done {
-		select {
-		case <-stopCh:
-			done = true
-		case <-sigsCh:
-			done = true
-		case resp := <-respsCh:
-			jsonBytes, err := json.Marshal(resp.PodResources)
-			if err != nil {
-				log.Printf("%v", err)
+func GetAvailableResources(autoReconnect bool, cli podresourcesapi.PodResourcesListerClient) {
+	resp, err := cli.GetAvailableResources(context.TODO(), &podresourcesapi.AvailableResourcesRequest{})
+	for {
+		if err == nil {
+			break
+		} else {
+			if !autoReconnect {
+				log.Fatalf("failed to watch: %v", err)
 			} else {
-				fmt.Printf("%s %s\n", podActionToString(resp.Action), string(jsonBytes))
-				messages++
+				log.Printf("Can't receive response: %v.Get(_) = _, %v", cli, err)
+				time.Sleep(1 * time.Second)
 			}
 		}
 	}
+	showNodeResources(resp)
+}
 
-	log.Printf("%v messages in %v", messages, time.Now().Sub(started))
+func showNodeResources(resp *podresourcesapi.AvailableResourcesResponse) {
+	for _, device := range resp.GetDevices() {
+			log.Printf("devices %q\n", spew.Sdump(device))
+		}
+	for _, cpuId := range resp.GetCpuIds() {
+			log.Printf("cpuId %q\n", spew.Sdump(cpuId))
+	}
 }
