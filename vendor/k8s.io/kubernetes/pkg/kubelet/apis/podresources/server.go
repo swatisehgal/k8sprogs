@@ -90,34 +90,31 @@ func (p *podResourcesServer) List(ctx context.Context, req *podresourcesapi.List
 }
 
 // AvailableResources returns information about all the devices known by the server
-func (p *podResourcesServer) GetAvailableResources(context.Context, *podresourcesapi.AvailableResourcesRequest) (*podresourcesapi.AvailableResourcesResponse, error) {
+func (p *podResourcesServer) GetAllocatableResources(context.Context, *podresourcesapi.AllocatableResourcesRequest) (*podresourcesapi.AllocatableResourcesResponse, error) {
 	allDevices := p.devicesProvider.GetAllDevices()
-	klog.Infof("Swati: server.go allDevices: %v", spew.Sdump(allDevices))
+	klog.Infof("server.go allDevices: %v", spew.Sdump(allDevices))
 	var respDevs []*podresourcesapi.ContainerDevices
-	for resourceName, resourceDevs := range allDevices {
-	//	var devIds []string
-		// for devId := range resourceDevs {
-		// 	if len(devId) > 0 {
-		// 		// TODO: from where these "" come from?
-		// 		devIds = append(devIds, devId)
-		// 	}
-		// }
-		var numaNode int64
+
+		for resourceName, resourceDevs := range allDevices {
+		numaDeviceIds := map[int64][]string{}
 		for devId, dev := range resourceDevs {
 			for _, node := range dev.GetTopology().GetNodes() {
-				numaNode = node.GetID()
+				numaNode := node.GetID()
+				numaDeviceIds[numaNode]= append(numaDeviceIds[numaNode],devId)
 			}
-			respDevs = append(respDevs, &podresourcesapi.ContainerDevices{
-				ResourceName: resourceName,
-				DeviceId:    devId,
-				Topology: &podresourcesapi.TopologyInfo{Nodes: []*podresourcesapi.NUMANode{{ID: numaNode}}},
-			})
 		}
-		klog.Infof("Swati: server.go GetAvailableResources respDevs: %v", spew.Sdump(respDevs))
+	for numaNode, devIds := range numaDeviceIds {
+		respDevs = append(respDevs, &podresourcesapi.ContainerDevices{
+			ResourceName: resourceName,
+			DeviceIds:  devIds,
+			Topology: &podresourcesapi.TopologyInfo{Nodes: []*podresourcesapi.NUMANode{{ID: numaNode}}},
+		})
+	}
+		klog.Infof("server.go GetAllocatableResources respDevs: %v", spew.Sdump(respDevs))
 
 	}
 
-	return &podresourcesapi.AvailableResourcesResponse{
+	return &podresourcesapi.AllocatableResourcesResponse{
 		Devices: respDevs,
 		CpuIds:  p.cpusProvider.GetAllCPUs(),
 	}, nil

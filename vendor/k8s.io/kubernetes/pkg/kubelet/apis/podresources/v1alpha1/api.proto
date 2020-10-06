@@ -18,17 +18,15 @@ option (gogoproto.goproto_unrecognized_all) = false;
 // node resources consumed by pods and containers on the node
 service PodResourcesLister {
     rpc List(ListPodResourcesRequest) returns (ListPodResourcesResponse) {}
-    rpc GetAvailableResources(AvailableResourcesRequest) returns (AvailableResourcesResponse) {}
+    rpc GetAllocatableResources(AllocatableResourcesRequest) returns (AllocatableResourcesResponse) {}
 }
+message AllocatableResourcesRequest {}
 
-message AvailableResourcesRequest {}
-
-// AvailableResourcesResponses contains informations about all the devices known by the kubelet
-message AvailableResourcesResponse {
+// AllocatableResourcesResponse contains informations about all the devices known by the kubelet
+message AllocatableResourcesResponse {
     repeated ContainerDevices devices = 1;
     repeated int64 cpu_ids = 2;
 }
-
 // ListPodResourcesRequest is the request made to the PodResourcesLister service
 message ListPodResourcesRequest {}
 
@@ -54,7 +52,7 @@ message ContainerResources {
 // ContainerDevices contains information about the devices assigned to a container
 message ContainerDevices {
     string resource_name = 1;
-    string device_id = 2;
+    repeated string device_ids = 2;
     TopologyInfo topology = 3;
 }
 

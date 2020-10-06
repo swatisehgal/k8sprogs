@@ -42,7 +42,7 @@ func main() {
 	autoReconnect := flag.BoolP("autoreconnect", "A", false, "don't give up if connection fails.")
 	podResourcesSocketPath := flag.StringP("socket", "S", defaultPodResourcesPath, "podresources socket path.")
 	listNamespace := flag.StringP("listnamespace", "N", defaultNamespace, "namespace to check")
-	endpoint := flag.StringP("endpoint", "E", "list", "List/Watch/GetAvailableResources podresource API Endpoint")
+	endpoint := flag.StringP("endpoint", "E", "list", "List/Watch/GetAllocatableResources podresource API Endpoint")
 
 	flag.Parse()
 
@@ -60,8 +60,8 @@ func main() {
 	switch *endpoint {
 	case "list":
 		Listing(*autoReconnect, cli, *listNamespace)
-	case "getavailableresources":
-		GetAvailableResources(*autoReconnect, cli)
+	case "getallocatableresources":
+		GetAllocatableResources(*autoReconnect, cli)
 	}
 }
 
@@ -95,8 +95,8 @@ func showPodResources(resp *podresourcesapi.ListPodResourcesResponse, ns string)
 	}
 }
 
-func GetAvailableResources(autoReconnect bool, cli podresourcesapi.PodResourcesListerClient) {
-	resp, err := cli.GetAvailableResources(context.TODO(), &podresourcesapi.AvailableResourcesRequest{})
+func GetAllocatableResources(autoReconnect bool, cli podresourcesapi.PodResourcesListerClient) {
+	resp, err := cli.GetAllocatableResources(context.TODO(), &podresourcesapi.AllocatableResourcesRequest{})
 	for {
 		if err == nil {
 			break
@@ -112,7 +112,7 @@ func GetAvailableResources(autoReconnect bool, cli podresourcesapi.PodResourcesL
 	showNodeResources(resp)
 }
 
-func showNodeResources(resp *podresourcesapi.AvailableResourcesResponse) {
+func showNodeResources(resp *podresourcesapi.AllocatableResourcesResponse) {
 	for _, device := range resp.GetDevices() {
 			log.Printf("devices %q\n", spew.Sdump(device))
 		}
